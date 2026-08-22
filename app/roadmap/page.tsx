@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import { Stepper } from "@/components/Stepper";
 import { RoadmapSkeleton } from "@/components/RoadmapSkeleton";
 import { mockRoadmap } from "@/lib/mock-data";
@@ -28,7 +28,7 @@ const domainTitles: Record<string, string> = {
   regulatory: "Regulatory Approval",
 };
 
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
@@ -36,7 +36,7 @@ const containerVariants = {
   }
 };
 
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { opacity: 0, y: 15 },
   show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } }
 };

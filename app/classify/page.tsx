@@ -40,7 +40,7 @@ const domainDescriptions: Record<string, string> = {
   regulatory: "Market authorization and safety regulations.",
 };
 
-const ALL_DOMAINS = ["patent", "trademark", "traditional_knowledge", "abs", "regulatory"];
+const ALL_DOMAINS = ["patent", "trademark", "traditional_knowledge", "abs", "regulatory"] as const;
 
 export default function ClassifyPage() {
   const router = useRouter();
