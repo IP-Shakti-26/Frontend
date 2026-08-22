@@ -81,7 +81,7 @@ export default function LandingPage() {
             Legal fragmentation, not lack of law.
           </h2>
           <p className="text-gray-600 text-lg sm:text-xl leading-relaxed">
-            Innovators don't lack access to legal documents — they lack the ability to know which ones apply to them. IP India, TKDL, NBA, and CDSCO/AYUSH each solve one piece, but nothing connects them.
+            Innovators don&apos;t lack access to legal documents — they lack the ability to know which ones apply to them. IP India, TKDL, NBA, and CDSCO/AYUSH each solve one piece, but nothing connects them.
           </p>
         </div>
       </motion.section>

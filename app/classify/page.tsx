@@ -137,8 +137,7 @@ export default function ClassifyPage() {
           <h3 className="text-xl font-serif font-bold text-forest mb-4 px-2">Detected Domains</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             {ALL_DOMAINS.map((domain) => {
-              // cast as any because traditional_knowledge might not be in the literal type of domains
-              const isActive = domains.includes(domain as any);
+              const isActive = domains.includes(domain);
               
               return (
                 <div

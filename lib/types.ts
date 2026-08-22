@@ -4,7 +4,7 @@ export interface ProductClassification {
   indian_bio_resources: boolean;
   tk_involved: boolean;
   target_markets: string[];
-  domains: ('patent' | 'trademark' | 'abs' | 'regulatory')[];
+  domains: ('patent' | 'trademark' | 'abs' | 'regulatory' | 'traditional_knowledge')[];
   clarifying_questions: string[];
   confidence: number;
 }
