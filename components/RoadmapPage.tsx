@@ -77,9 +77,9 @@ export default function RoadmapPage({
     setDownloadError(null);
     try {
       await downloadReport(sessionId);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("PDF download error:", err);
-      setDownloadError(err.message || "Failed to download PDF report.");
+      setDownloadError(err instanceof Error ? err.message : "Failed to download PDF report.");
     } finally {
       setIsDownloading(false);
     }
@@ -320,7 +320,7 @@ export default function RoadmapPage({
                       We could not find authoritative sources for this area.
                     </p>
                     <p className="text-gray-500 text-sm max-w-md mx-auto mb-8 leading-relaxed">
-                      We don't guess. Because IP-SAKTI relies exclusively on verified statutory texts and precedents, this domain has been flagged for professional review.
+                      We don&apos;t guess. Because IP-SAKTI relies exclusively on verified statutory texts and precedents, this domain has been flagged for professional review.
                     </p>
                     <button className="px-6 py-2.5 rounded-full font-semibold text-sm bg-white border shadow-sm text-forest hover:bg-gray-50 transition-colors" style={{ borderColor: "var(--color-border)" }}>
                       Talk to a facilitator <span className="opacity-50 ml-1">→</span>

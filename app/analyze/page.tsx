@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
 import IntakePage, { IntakeFormData } from "@/components/IntakePage";
 import AnalyzingPage from "@/components/AnalyzingPage";
 import ClarifyPage from "@/components/ClarifyPage";
@@ -11,7 +10,6 @@ import {
   analyzeSession, 
   clarifySession, 
   getSummary, 
-  ClassificationResult, 
   IPRoadmap, 
   SummaryResponse 
 } from "@/lib/api";
@@ -22,7 +20,7 @@ export default function MainApp() {
   const [view, setView] = useState<AppView>("intake");
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [formData, setFormData] = useState<IntakeFormData | undefined>(undefined);
-  const [classification, setClassification] = useState<ClassificationResult | null>(null);
+  // classification state removed since it's unused
   const [clarifyingQuestions, setClarifyingQuestions] = useState<string[]>([]);
   const [roadmap, setRoadmap] = useState<IPRoadmap | null>(null);
   const [summary, setSummary] = useState<SummaryResponse | null>(null);
@@ -47,7 +45,7 @@ export default function MainApp() {
     setView("intake");
     setSessionId(null);
     setFormData(undefined);
-    setClassification(null);
+    // clear classification state
     setClarifyingQuestions([]);
     setRoadmap(null);
     setSummary(null);
@@ -81,7 +79,7 @@ export default function MainApp() {
         return;
       }
 
-      setClassification(classifyRes.classification);
+      // unused classification assignment removed
 
       const analyzeRes = await analyzeSession(classifyRes.session_id);
       setRoadmap(analyzeRes.roadmap);
@@ -98,9 +96,9 @@ export default function MainApp() {
         .catch(() => {});
 
       setView("roadmap");
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Analysis Pipeline Error:", err);
-      setError(err.message || "Failed to complete formulation analysis. Please verify server connection.");
+      setError(err instanceof Error ? err.message : "Failed to complete formulation analysis. Please verify server connection.");
     } finally {
       setIsSubmitting(false);
     }
@@ -129,9 +127,9 @@ export default function MainApp() {
         .catch(() => {});
 
       setView("roadmap");
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Clarification Submission Error:", err);
-      setError(err.message || "Failed to process clarifications.");
+      setError(err instanceof Error ? err.message : "Failed to process clarifications.");
     } finally {
       setIsSubmitting(false);
     }
@@ -156,8 +154,8 @@ export default function MainApp() {
         .catch(() => {});
 
       setView("roadmap");
-    } catch (err: any) {
-      setError(err.message || "Roadmap synthesis is still in progress. Please check again in a few moments.");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Roadmap synthesis is still in progress. Please check again in a few moments.");
     }
   };
 

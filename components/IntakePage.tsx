@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { 
-  Sparkles, ChevronDown, ChevronUp, AlertCircle, Info, Check, 
-  Pill, Apple, Sparkle, HelpCircle, FileText, ArrowRight, ArrowLeft 
+  Sparkles, ChevronDown, ChevronUp, AlertCircle, Info, 
+  Pill, Apple, Sparkle, HelpCircle, ArrowLeft 
 } from "lucide-react";
 import { getExamples, DemoExample } from "@/lib/api";
 
@@ -388,7 +388,7 @@ export default function IntakePage({
                       name="classicalBasis"
                       value={opt.val}
                       checked={form.classicalBasis === opt.val}
-                      onChange={() => setForm({ ...form, classicalBasis: opt.val as any })}
+                      onChange={() => setForm({ ...form, classicalBasis: opt.val as IntakeFormData["classicalBasis"] })}
                       className="mt-0.5 accent-forest"
                     />
                     <span className="text-xs font-medium text-gray-800 leading-snug">{opt.label}</span>
@@ -460,7 +460,7 @@ export default function IntakePage({
                       name="intendedCategory"
                       value={opt.val}
                       checked={form.intendedCategory === opt.val}
-                      onChange={() => setForm({ ...form, intendedCategory: opt.val as any })}
+                      onChange={() => setForm({ ...form, intendedCategory: opt.val as IntakeFormData["intendedCategory"] })}
                       className="accent-forest"
                     />
                     <div className="flex items-center gap-2">

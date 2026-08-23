@@ -11,11 +11,7 @@ import {
 export default function LandingPage() {
   const router = useRouter();
 
-  const handleScroll = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-    const elem = document.getElementById("how-it-works");
-    elem?.scrollIntoView({ behavior: "smooth" });
-  };
+
 
   const fadeInUp: Variants = {
     hidden: { opacity: 0, y: 24 },
@@ -253,7 +249,7 @@ export default function LandingPage() {
                 </p>
                 <div className="bg-gray-50 rounded-lg p-3 border border-gray-100 flex items-start gap-3">
                   <FileText className="w-4 h-4 text-gray-400 mt-0.5 shrink-0" />
-                  <span className="text-xs text-gray-500">Citation: The Patents Act, 1970 — Section 3(p): "an invention which in effect is traditional knowledge or which is an aggregation or duplication of known properties of traditionally known component or components."</span>
+                  <span className="text-xs text-gray-500">Citation: The Patents Act, 1970 &mdash; Section 3(p): &quot;an invention which in effect is traditional knowledge or which is an aggregation or duplication of known properties of traditionally known component or components.&quot;</span>
                 </div>
               </div>
             </div>

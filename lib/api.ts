@@ -131,7 +131,7 @@ async function fetchWithFallback(
   const ports = [BASE_URL, "http://localhost:8082", "http://localhost:8080"];
   const uniqueUrls = Array.from(new Set(ports.map(p => p.replace(/\/$/, ""))));
 
-  let lastError: any = null;
+  let lastError: unknown = null;
 
   for (const baseUrl of uniqueUrls) {
     const fullUrl = path.startsWith("http") ? path : `${baseUrl}${path.startsWith("/") ? path : `/${path}`}`;
@@ -151,10 +151,10 @@ async function fetchWithFallback(
       if (response.ok || response.status === 409 || response.status === 400) {
         return response;
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       clearTimeout(timeoutId);
       lastError = err;
-      if (err.name === "AbortError") {
+      if (err instanceof Error && err.name === "AbortError") {
         throw new Error(`Request timed out after ${timeoutMs / 1000} seconds`);
       }
     }
