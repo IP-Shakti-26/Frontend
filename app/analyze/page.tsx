@@ -2,9 +2,10 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, ChevronDown, ChevronUp } from "lucide-react";
+import { Loader2, ChevronDown, ChevronUp, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Stepper } from "@/components/Stepper";
+import { classifyProduct } from "@/lib/api";
 
 export default function Home() {
   const router = useRouter();
@@ -18,18 +19,48 @@ export default function Home() {
   const [classicalText, setClassicalText] = useState("");
   
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const isSubmitDisabled = description.length < 20 || isAnalyzing;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isSubmitDisabled) return;
     
     setIsAnalyzing(true);
+    setErrorMsg(null);
+
+    // Build rich description payload
+    let fullDesc = description.trim();
+    if (market === "international" && countries.trim()) {
+      fullDesc += ` Target markets include India and ${countries.trim()}.`;
+    }
+    if (ingredients.trim()) {
+      fullDesc += ` Key active ingredients: ${ingredients.trim()}.`;
+    }
+    if (source.trim()) {
+      fullDesc += ` Biological source: ${source.trim()}.`;
+    }
+    if (classicalText.trim()) {
+      fullDesc += ` Classical Ayurvedic text reference: ${classicalText.trim()}.`;
+    }
     
-    setTimeout(() => {
+    try {
+      const response = await classifyProduct(fullDesc);
+      
+      // Save session info and classification response in sessionStorage
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("ip_session_id", response.session_id);
+        sessionStorage.setItem("ip_classification", JSON.stringify(response));
+        sessionStorage.setItem("ip_raw_description", fullDesc);
+      }
+      
       router.push("/classify");
-    }, 1500);
+    } catch (err: any) {
+      console.error("Classification error:", err);
+      setErrorMsg(err.message || "Failed to connect to IP-SAKTI server at http://localhost:8082.");
+      setIsAnalyzing(false);
+    }
   };
 
   return (
@@ -46,6 +77,16 @@ export default function Home() {
           </p>
         </div>
 
+        {errorMsg && (
+          <div className="mb-6 p-4 rounded-2xl bg-red-50 border border-red-200 text-red-700 flex items-start gap-3 text-sm">
+            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="font-semibold">Unable to process formulation</p>
+              <p>{errorMsg}</p>
+            </div>
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="flex flex-col gap-8">
           <div className="flex flex-col gap-2">
             <label htmlFor="description" className="font-semibold text-gray-800 text-sm">
@@ -57,7 +98,7 @@ export default function Home() {
               onChange={(e) => setDescription(e.target.value)}
               rows={6}
               className="w-full rounded-2xl border border-gray-300 p-4 font-sans text-base focus:outline-none focus:ring-2 focus:ring-forest/50 focus:border-forest focus:scale-[1.01] transition-all resize-y bg-offwhite shadow-inner"
-              placeholder="e.g. I created a new Ayurvedic joint-pain formulation using Ashwagandha and Shallaki..."
+              placeholder="e.g. An Ayurvedic herbal formulation containing Ashwagandha and Shallaki for joint pain relief with synergistically extracted active compounds..."
             />
             <div className="text-xs text-gray-500 text-right">
               {description.length} / 20 min characters
@@ -135,7 +176,7 @@ export default function Home() {
                     id="ingredients"
                     value={ingredients}
                     onChange={(e) => setIngredients(e.target.value)}
-                    placeholder="e.g. Ashwagandha, Turmeric..."
+                    placeholder="e.g. Ashwagandha, Shallaki, Turmeric..."
                     className="w-full rounded-xl border border-gray-300 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-forest/50 focus:border-forest focus:scale-[1.01] transition-all"
                   />
                 </div>
@@ -148,7 +189,7 @@ export default function Home() {
                     id="source"
                     value={source}
                     onChange={(e) => setSource(e.target.value)}
-                    placeholder="e.g. Western Ghats, local farmers..."
+                    placeholder="e.g. Western Ghats, local wild-harvested..."
                     className="w-full rounded-xl border border-gray-300 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-forest/50 focus:border-forest focus:scale-[1.01] transition-all"
                   />
                 </div>
@@ -182,10 +223,10 @@ export default function Home() {
             {isAnalyzing ? (
               <>
                 <Loader2 className="w-5 h-5 animate-spin" />
-                Analyzing...
+                Classifying product...
               </>
             ) : (
-              "Analyze Product →"
+              "Classify Product →"
             )}
           </button>
         </form>
@@ -193,4 +234,3 @@ export default function Home() {
     </div>
   );
 }
-
