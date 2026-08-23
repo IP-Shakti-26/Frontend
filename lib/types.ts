@@ -11,6 +11,8 @@ export type {
   EscalationItem,
   IPRoadmap,
   AnalyzeResponse,
+  DemoExample,
+  SummaryResponse,
 } from "./api";
 
 export interface ProductClassification {
