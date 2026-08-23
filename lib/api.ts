@@ -91,6 +91,9 @@ export interface IPRoadmap {
   next_steps: string[];
   human_escalation: EscalationItem[];
   overall_confidence: number;
+  total_sources?: number;
+  domains_covered?: number;
+  classification_confidence?: number;
   disclaimer: string;
 }
 

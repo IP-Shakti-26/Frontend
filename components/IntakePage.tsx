@@ -243,7 +243,7 @@ export default function IntakePage({
   };
 
   return (
-    <div className="w-full min-h-screen py-10 px-4 sm:px-6 flex flex-col items-center" style={{ backgroundColor: "var(--color-bg)" }}>
+    <div className="w-full min-h-screen py-10 px-4 sm:px-6 flex flex-col items-center">
       {/* Header */}
       <div className="w-full max-w-[720px] text-center mb-8">
         <h1 className="text-3xl sm:text-4xl font-serif font-bold tracking-tight mb-1" style={{ color: "var(--color-primary)" }}>

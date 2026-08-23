@@ -35,7 +35,7 @@ export default function ClarifyPage({
   };
 
   return (
-    <div className="w-full min-h-screen py-12 px-4 flex flex-col items-center justify-center" style={{ backgroundColor: "var(--color-bg)" }}>
+    <div className="w-full min-h-screen py-12 px-4 flex flex-col items-center justify-center">
       <div className="w-full max-w-[600px] bg-white rounded-3xl border p-6 sm:p-10 shadow-sm flex flex-col gap-6" style={{ borderColor: "var(--color-border)" }}>
         
         <div className="flex items-center justify-between border-b pb-4" style={{ borderColor: "var(--color-border)" }}>

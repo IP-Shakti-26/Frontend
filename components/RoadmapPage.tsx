@@ -4,7 +4,8 @@ import React, { useState, useEffect } from "react";
 import { 
   Scale, Tag, BookOpen, Leaf, ShieldCheck, ExternalLink, 
   AlertTriangle, CheckSquare, Square, Download, RotateCcw, 
-  Sparkles, Shield, AlertCircle, FileText, CheckCircle2, XCircle, Loader2 
+  Sparkles, Shield, AlertCircle, FileText, CheckCircle2, XCircle, Loader2,
+  ChevronDown, ChevronUp
 } from "lucide-react";
 import { IPRoadmap, SummaryResponse, getSummary, downloadReport } from "@/lib/api";
 
@@ -61,6 +62,7 @@ export default function RoadmapPage({
   const [summary, setSummary] = useState<SummaryResponse | null>(initialSummary || null);
   const [isDownloading, setIsDownloading] = useState(false);
   const [downloadError, setDownloadError] = useState<string | null>(null);
+  const [showConfidenceDetails, setShowConfidenceDetails] = useState(false);
 
   useEffect(() => {
     if (!summary && sessionId) {
@@ -89,10 +91,10 @@ export default function RoadmapPage({
 
   const domains = roadmap.domains || [];
   const activeDomain = domains[activeTabIdx] || domains[0];
-  const overallConf = roadmap.overall_confidence ?? 0.85;
+  const overallConf = roadmap.overall_confidence;
 
-  const confPercent = Math.round(overallConf * 100);
-  const confColor = overallConf >= 0.7 ? "#166534" : overallConf >= 0.5 ? "#D97706" : "#991B1B";
+  const confPercent = overallConf != null ? Math.round(overallConf * 100) : null;
+  const confColor = overallConf != null && overallConf >= 0.7 ? "#166534" : overallConf != null && overallConf >= 0.5 ? "#D97706" : "#991B1B";
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -125,7 +127,7 @@ export default function RoadmapPage({
   };
 
   return (
-    <div className="w-full min-h-screen py-10 px-4 sm:px-6 flex flex-col items-center pb-32" style={{ backgroundColor: "var(--color-bg)" }}>
+    <div className="w-full min-h-screen py-10 px-4 sm:px-6 flex flex-col items-center pb-32">
       <div className="w-full max-w-[960px] flex flex-col gap-8">
         
         {/* Top Header & Actions */}
@@ -217,21 +219,60 @@ export default function RoadmapPage({
             </h3>
           </div>
 
-          <div className="w-full sm:w-64 flex flex-col gap-1.5">
-            <div className="flex justify-between items-center text-xs">
-              <span className="font-semibold text-gray-600">Overall Confidence</span>
-              <span className="font-bold font-mono" style={{ color: confColor }}>{confPercent}%</span>
+          {overallConf != null ? (
+            <div className="w-full sm:w-64 flex flex-col gap-1.5">
+              <div className="flex justify-between items-center text-xs">
+                <span className="font-semibold text-gray-600">Overall Confidence</span>
+                <span className="font-bold font-mono" style={{ color: confColor }}>{confPercent}%</span>
+              </div>
+              <div className="w-full h-2.5 rounded-full bg-gray-100 overflow-hidden border" style={{ borderColor: "var(--color-border)" }}>
+                <div
+                  className="h-full rounded-full transition-all duration-500"
+                  style={{ width: `${confPercent}%`, backgroundColor: confColor }}
+                />
+              </div>
+              <div className="flex flex-col gap-2 mt-1">
+                <div className="flex justify-between items-center text-[11px] text-gray-500">
+                  <span>Based on statutory acts & Qdrant RAG sources</span>
+                  {(roadmap.total_sources != null || roadmap.domains_covered != null || roadmap.classification_confidence != null) && (
+                    <button 
+                      onClick={() => setShowConfidenceDetails(!showConfidenceDetails)}
+                      className="flex items-center gap-0.5 hover:text-gray-700 transition-colors font-medium"
+                    >
+                      [expand] {showConfidenceDetails ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                    </button>
+                  )}
+                </div>
+
+                {showConfidenceDetails && (roadmap.total_sources != null || roadmap.domains_covered != null || roadmap.classification_confidence != null) && (
+                  <div className="mt-1 p-3 rounded-lg bg-gray-50/80 border border-gray-100 text-xs flex flex-col gap-2 animate-in slide-in-from-top-1 fade-in">
+                    {roadmap.total_sources != null && (
+                      <div className="flex items-start gap-1.5 text-gray-600">
+                        <span className="text-gray-400 mt-[1px]">•</span>
+                        <span><span className="font-bold text-gray-800">{roadmap.total_sources}</span> statute-level sources</span>
+                      </div>
+                    )}
+                    {roadmap.domains_covered != null && (
+                      <div className="flex items-start gap-1.5 text-gray-600">
+                        <span className="text-gray-400 mt-[1px]">•</span>
+                        <span><span className="font-bold text-gray-800">{roadmap.domains_covered} of {roadmap.domains.length}</span> domains covered</span>
+                      </div>
+                    )}
+                    {roadmap.classification_confidence != null && (
+                      <div className="flex items-start gap-1.5 text-gray-600">
+                        <span className="text-gray-400 mt-[1px]">•</span>
+                        <span>Classification confidence <span className="font-mono text-[10px] text-gray-500 ml-1">({roadmap.classification_confidence.toFixed(2)})</span></span>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
-            <div className="w-full h-2.5 rounded-full bg-gray-100 overflow-hidden border" style={{ borderColor: "var(--color-border)" }}>
-              <div
-                className="h-full rounded-full transition-all duration-500"
-                style={{ width: `${confPercent}%`, backgroundColor: confColor }}
-              />
+          ) : (
+            <div className="w-full sm:w-64 flex flex-col gap-1.5 items-end justify-center">
+              <span className="text-sm font-semibold text-gray-500 italic">Confidence unavailable</span>
             </div>
-            <span className="text-[11px] text-gray-500 text-right">
-              Based on statutory acts & Qdrant RAG sources
-            </span>
-          </div>
+          )}
         </div>
 
         {/* SECTION 9.3 — DOMAIN TABS OR ACCORDION */}
@@ -267,25 +308,46 @@ export default function RoadmapPage({
             {/* Active Tab Content */}
             {activeDomain && (
               <div className="p-6 sm:p-8 flex flex-col gap-6">
-                <div className="flex flex-wrap items-center justify-between gap-3 border-b pb-4" style={{ borderColor: "var(--color-border)" }}>
-                  <div className="flex items-center gap-3">
-                    <h3 className="text-2xl font-serif font-bold text-gray-900">
+                {activeDomain.status === "insufficient_evidence" ? (
+                  <div className="flex flex-col items-center justify-center text-center p-10 sm:p-14 border border-dashed rounded-2xl bg-gray-50/50" style={{ borderColor: "var(--color-border)" }}>
+                    <div className="w-12 h-12 rounded-full bg-forest/5 flex items-center justify-center mb-5">
+                      <Shield className="w-6 h-6 text-forest/70" />
+                    </div>
+                    <h3 className="text-2xl font-serif font-bold text-gray-900 mb-3">
                       {DOMAIN_NAME_MAP[activeDomain.domain] || activeDomain.domain}
                     </h3>
-                    {getStatusBadge(activeDomain.status)}
+                    <p className="text-gray-900 font-semibold text-lg max-w-md mx-auto mb-2">
+                      We could not find authoritative sources for this area.
+                    </p>
+                    <p className="text-gray-500 text-sm max-w-md mx-auto mb-8 leading-relaxed">
+                      We don't guess. Because IP-SAKTI relies exclusively on verified statutory texts and precedents, this domain has been flagged for professional review.
+                    </p>
+                    <button className="px-6 py-2.5 rounded-full font-semibold text-sm bg-white border shadow-sm text-forest hover:bg-gray-50 transition-colors" style={{ borderColor: "var(--color-border)" }}>
+                      Talk to a facilitator <span className="opacity-50 ml-1">→</span>
+                    </button>
+                    {/* TODO: Wire up facilitator routing */}
                   </div>
-                  <span className="text-xs font-mono font-semibold px-2.5 py-1 rounded bg-gray-100 border text-gray-600">
-                    Confidence: {Math.round((activeDomain.confidence || 0.8) * 100)}%
-                  </span>
-                </div>
+                ) : (
+                  <>
+                    <div className="flex flex-wrap items-center justify-between gap-3 border-b pb-4" style={{ borderColor: "var(--color-border)" }}>
+                      <div className="flex items-center gap-3">
+                        <h3 className="text-2xl font-serif font-bold text-gray-900">
+                          {DOMAIN_NAME_MAP[activeDomain.domain] || activeDomain.domain}
+                        </h3>
+                        {getStatusBadge(activeDomain.status)}
+                      </div>
+                      <span className="text-xs font-mono font-semibold px-2.5 py-1 rounded bg-gray-100 border text-gray-600">
+                        {activeDomain.confidence != null ? `Confidence: ${Math.round(activeDomain.confidence * 100)}%` : "Confidence: N/A"}
+                      </span>
+                    </div>
 
-                {/* Finding */}
-                <div>
-                  <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Legal Finding</h4>
-                  <p className="text-base sm:text-lg font-serif text-gray-900 leading-relaxed">
-                    {activeDomain.finding}
-                  </p>
-                </div>
+                    {/* Finding */}
+                    <div>
+                      <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Legal Finding</h4>
+                      <p className="text-base sm:text-lg font-serif text-gray-900 leading-relaxed">
+                        {activeDomain.finding}
+                      </p>
+                    </div>
 
                 {/* Key Risks */}
                 {activeDomain.key_risks && activeDomain.key_risks.length > 0 && (
@@ -353,6 +415,8 @@ export default function RoadmapPage({
                       Due to statutory complexity under Section 3 / NBA regulatory triggers, direct consultation with a registered agent or attorney is strongly advised prior to public filing or commercial deployment.
                     </p>
                   </div>
+                )}
+                  </>
                 )}
               </div>
             )}

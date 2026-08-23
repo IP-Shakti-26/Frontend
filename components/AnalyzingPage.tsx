@@ -41,7 +41,7 @@ export default function AnalyzingPage({ onCheckStatus, error }: AnalyzingPagePro
   const isTimedOut = secondsElapsed >= 90;
 
   return (
-    <div className="w-full min-h-screen py-16 px-4 flex flex-col items-center justify-center text-center" style={{ backgroundColor: "var(--color-bg)" }}>
+    <div className="w-full min-h-screen py-16 px-4 flex flex-col items-center justify-center text-center">
       <div className="w-full max-w-[480px] bg-white rounded-3xl border p-8 sm:p-10 shadow-sm flex flex-col items-center gap-6" style={{ borderColor: "var(--color-border)" }}>
         {/* Logo */}
         <div>
