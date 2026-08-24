@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion, Variants } from "framer-motion";
@@ -11,6 +11,14 @@ import {
 export default function LandingPage() {
   const router = useRouter();
 
+  useEffect(() => {
+    document.documentElement.classList.add("no-scrollbar");
+    document.body.classList.add("no-scrollbar");
+    return () => {
+      document.documentElement.classList.remove("no-scrollbar");
+      document.body.classList.remove("no-scrollbar");
+    };
+  }, []);
 
 
   const fadeInUp: Variants = {
@@ -35,7 +43,7 @@ export default function LandingPage() {
   ];
 
   return (
-    <div className="flex flex-col w-full min-h-screen overflow-hidden relative text-forest-dark font-sans">
+    <div className="flex flex-col w-full min-h-screen overflow-hidden relative text-forest-dark font-sans no-scrollbar">
 
       {/* ═══════════════════════════════════════════════
           1. HERO SECTION (Asymmetric split)

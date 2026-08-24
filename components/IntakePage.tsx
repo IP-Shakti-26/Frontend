@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { 
-  Sparkles, ChevronDown, ChevronUp, AlertCircle, Info, 
-  Pill, Apple, Sparkle, HelpCircle, ArrowLeft 
+import {
+  Sparkles, ChevronDown, ChevronUp, AlertCircle, Info,
+  Pill, Apple, Sparkle, HelpCircle, ArrowLeft, Leaf, ArrowRight
 } from "lucide-react";
 import { getExamples, DemoExample } from "@/lib/api";
 
@@ -229,6 +229,11 @@ export default function IntakePage({
 
   const isStep1Valid = missingFields.length === 0;
 
+  const answeredFields = [descValid, classicalValid, sourcingValid, categoryValid, marketValid];
+  const answeredCount = answeredFields.filter(Boolean).length;
+  const totalRequired = answeredFields.length;
+  const progressPercent = Math.round((answeredCount / totalRequired) * 100);
+
   const handleProceedToStep2 = (e: React.FormEvent) => {
     e.preventDefault();
     if (isStep1Valid) {
@@ -265,9 +270,9 @@ export default function IntakePage({
       {/* STEP 1 FORM */}
       {step === 1 && (
         <div className="w-full max-w-[720px] bg-white rounded-2xl border p-6 sm:p-10 shadow-sm" style={{ borderColor: "var(--color-border)" }}>
-          
+
           {/* Example Library Collapsible */}
-          <div className="mb-8 border rounded-xl overflow-hidden bg-white" style={{ borderColor: "var(--color-border)" }}>
+          <div className="mb-6 border rounded-xl overflow-hidden bg-white relative z-10" style={{ borderColor: "var(--color-border)" }}>
             <button
               type="button"
               onClick={() => setExamplesOpen(!examplesOpen)}
@@ -275,36 +280,51 @@ export default function IntakePage({
               style={{ color: "var(--color-primary)" }}
             >
               <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4" style={{ color: "var(--color-accent)" }} />
                 <span>Try an example scenario (Instant Pre-fill)</span>
               </div>
               {examplesOpen ? <ChevronUp className="w-4 h-4 text-gray-500" /> : <ChevronDown className="w-4 h-4 text-gray-500" />}
             </button>
 
             {examplesOpen && (
-              <div className="p-4 border-t grid grid-cols-1 sm:grid-cols-2 gap-3" style={{ borderColor: "var(--color-border)", backgroundColor: "var(--color-bg)" }}>
-                {examples.map((ex) => (
-                  <div key={ex.id} className="p-4 rounded-xl border bg-white flex flex-col justify-between gap-3 shadow-2xs hover:border-forest/40 transition-colors" style={{ borderColor: "var(--color-border)" }}>
-                    <div>
-                      <div className="flex items-center justify-between gap-2 mb-1.5">
-                        <h4 className="font-serif font-bold text-sm text-gray-900 leading-snug">{ex.title}</h4>
-                        <span
-                          className="px-2 py-0.5 rounded text-[11px] font-bold"
-                          style={{
-                            backgroundColor: ex.complexity === "high" ? "#FEF3C7" : ex.complexity === "medium" ? "#F3F4F6" : "#DCFCE7",
-                            color: ex.complexity === "high" ? "var(--color-accent)" : ex.complexity === "medium" ? "var(--color-muted)" : "var(--color-success)",
-                          }}
-                        >
-                          {ex.complexity.toUpperCase()}
-                        </span>
+              <div className="p-5 border-t grid grid-cols-1 sm:grid-cols-2 gap-4 bg-offwhite/30" style={{ borderColor: "var(--color-border)" }}>
+                {examples.map((ex, idx) => (
+                  <div
+                    key={ex.id}
+                    className="group relative p-5 rounded-sm border border-forest/15 bg-[#FDFCF8] flex flex-col justify-between gap-4 shadow-sm hover:-translate-y-1 hover:shadow-md hover:border-forest/40 transition-all duration-300"
+                  >
+                    {/* Subtle botanical accent */}
+                    <div className="absolute top-2 right-2 opacity-[0.04] pointer-events-none">
+                      <Leaf className={`w-12 h-12 ${idx % 2 === 0 ? "scale-x-[-1]" : ""} rotate-${(idx * 12) || "0"}`} />
+                    </div>
+
+                    <div className="relative z-10 flex-1">
+                      <div className="flex flex-col gap-2 mb-2">
+                        {/* Complexity Specimen Tag */}
+                        <div className="flex items-center gap-1.5">
+                          <div
+                            className="w-1.5 h-1.5 rounded-full"
+                            style={{
+                              backgroundColor: ex.complexity === "high" ? "var(--color-accent)" : ex.complexity === "medium" ? "var(--color-warning)" : "var(--color-success)",
+                            }}
+                          />
+                          <span
+                            className="text-[9px] font-mono tracking-[0.15em] uppercase"
+                            style={{
+                              color: ex.complexity === "high" ? "var(--color-accent)" : ex.complexity === "medium" ? "var(--color-warning)" : "var(--color-success)",
+                            }}
+                          >
+                            {ex.complexity} COMPLEXITY
+                          </span>
+                        </div>
+                        <h4 className="font-serif font-bold text-base text-gray-900 leading-snug">{ex.title}</h4>
                       </div>
                       <p className="text-xs text-gray-600 line-clamp-3 leading-relaxed">{ex.description}</p>
                     </div>
 
-                    <div className="flex items-center justify-between pt-2 border-t" style={{ borderColor: "var(--color-border)" }}>
-                      <div className="flex flex-wrap gap-1">
+                    <div className="relative z-10 flex items-center justify-between pt-2 mt-auto gap-3">
+                      <div className="flex flex-wrap gap-1.5 flex-1 min-w-0">
                         {ex.tags.slice(0, 2).map((t) => (
-                          <span key={t} className="px-1.5 py-0.5 rounded bg-gray-100 text-[10px] font-medium text-gray-600 border border-gray-200">
+                          <span key={t} className="font-mono text-[9px] uppercase tracking-wider text-forest/70 border border-forest/10 px-1.5 py-0.5 bg-white/50 truncate max-w-full">
                             #{t}
                           </span>
                         ))}
@@ -312,10 +332,10 @@ export default function IntakePage({
                       <button
                         type="button"
                         onClick={() => handleUseExample(ex)}
-                        className="text-xs font-bold transition-all hover:underline flex items-center gap-1"
-                        style={{ color: "var(--color-primary)" }}
+                        className="text-xs font-semibold text-forest flex items-center gap-1 hover:text-forest-dark transition-colors group/btn shrink-0"
                       >
-                        Use example →
+                        <span className="underline decoration-forest/30 underline-offset-2 whitespace-nowrap">Use example</span>
+                        <ArrowRight className="w-3 h-3 group-hover/btn:translate-x-0.5 transition-transform shrink-0" />
                       </button>
                     </div>
                   </div>
@@ -324,8 +344,32 @@ export default function IntakePage({
             )}
           </div>
 
+          {/* Progress Indicator: Growth Metaphor (Leaves) */}
+          <div className="mb-8 p-4 rounded-xl bg-forest/[0.03] border border-forest/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative z-10">
+            <div className="flex flex-col gap-0.5">
+              <span className="text-forest font-semibold text-sm flex items-center gap-1.5">
+                <Leaf className="w-4 h-4 text-forest" />
+                <span>Form Progress</span>
+              </span>
+              <span className="text-forest-light text-xs font-medium">
+                {answeredCount} of {totalRequired} required fields completed ({progressPercent}%)
+              </span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              {Array.from({ length: totalRequired }).map((_, i) => {
+                const isFilled = i < answeredCount;
+                return (
+                  <Leaf
+                    key={i}
+                    className={`w-5 h-5 transition-all duration-300 ${isFilled ? "text-forest fill-forest" : "text-forest/20 fill-transparent"}`}
+                  />
+                );
+              })}
+            </div>
+          </div>
+
           <form onSubmit={handleProceedToStep2} className="flex flex-col gap-8">
-            
+
             {/* FIELD 1 */}
             <div className="flex flex-col gap-2">
               <label htmlFor="description" className="font-semibold text-sm text-gray-900">
