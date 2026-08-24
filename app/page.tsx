@@ -254,10 +254,6 @@ export default function LandingPage() {
               </div>
             </div>
           </motion.div>
-
-          <button onClick={() => router.push("/analyze")} className="px-8 py-3 rounded-full font-bold text-forest bg-white border border-forest/20 hover:border-forest/40 hover:bg-forest/[0.02] active:scale-95 transition-all shadow-sm">
-            Try it with your product
-          </button>
         </div>
       </section>
 
